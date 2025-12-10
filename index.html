@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        /* Notification */
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .movie-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 250px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .movie-card button {
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Movie Collection Manager</h1>
+
+<h3>Add New Movie</h3>
+
+<input type="text" id="title" placeholder="Title">
+<input type="text" id="genre" placeholder="Genre">
+<input type="number" id="year" placeholder="Release Year">
+<button onclick="addMovie()">Add Movie</button>
+
+<h2>Movie List</h2>
+<div id="movieList"></div>
+
+<!-- Notification -->
+<div id="notification"></div>
+
+<script>
+    let movies = [];
+
+    function showNotification(message) {
+        const note = document.getElementById("notification");
+        note.innerText = message;
+        note.style.display = "block";
+
+        setTimeout(() => {
+            note.style.display = "none";
+        }, 2000);
+    }
+
+    function addMovie() {
+        const title = document.getElementById("title").value.trim();
+        const genre = document.getElementById("genre").value.trim();
+        const year = document.getElementById("year").value.trim();
+
+        if (!title || !genre || !year) {
+            showNotification("❗ Please fill all fields");
+            return;
+        }
+
+        movies.push({ title, genre, year });
+        renderMovies();
+        showNotification("✅ Movie added!");
+
+        document.getElementById("title").value = "";
+        document.getElementById("genre").value = "";
+        document.getElementById("year").value = "";
+    }
+
+    function renderMovies() {
+        const list = document.getElementById("movieList");
+        list.innerHTML = "";
+
+        movies.forEach((movie, index) => {
+            list.innerHTML += `
+                <div class="movie-card">
+                    <strong>${movie.title}</strong><br>
+                    Genre: ${movie.genre}<br>
+                    Year: ${movie.year}<br><br>
+
+                    <button onclick="editMovie(${index})">Edit</button>
+                    <button onclick="deleteMovie(${index})">Delete</button>
+                </div>
+            `;
+        });
+    }
+
+    function deleteMovie(index) {
+        movies.splice(index, 1);
+        renderMovies();
+        showNotification("🗑 Movie deleted");
+    }
+
+    function editMovie(index) {
+        const movie = movies[index];
+
+        const newTitle = prompt("Edit title:", movie.title);
+        if (newTitle === null || newTitle.trim() === "") return;
+
+        const newGenre = prompt("Edit genre:", movie.genre);
+        if (newGenre === null || newGenre.trim() === "") return;
+
+        const newYear = prompt("Edit year:", movie.year);
+        if (newYear === null || newYear.trim() === "") return;
+
+        movies[index] = {
+            title: newTitle,
+            genre: newGenre,
+            year: newYear
+        };
+
+        renderMovies();
+        showNotification("✏️ Movie updated!");
+    }
+</script>
+
+</body>
+</html>
